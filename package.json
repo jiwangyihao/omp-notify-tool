@@ -1,0 +1,36 @@
+{
+  "name": "opencode-notify-tool",
+  "version": "0.1.0",
+  "description": "Non-blocking notify tool plugin for OpenCode",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "type": "module",
+  "license": "MPL-2.0",
+  "author": "jiwangyihao",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jiwangyihao/opencode-notify-tool.git"
+  },
+  "homepage": "https://github.com/jiwangyihao/opencode-notify-tool#readme",
+  "bugs": {
+    "url": "https://github.com/jiwangyihao/opencode-notify-tool/issues"
+  },
+  "keywords": ["opencode", "plugin", "notify", "toast", "progress"],
+  "engines": { "node": ">=24.0.0" },
+  "files": ["dist/", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test:built": "npm run build && node --test test/*.test.js",
+    "test": "npm run test:built",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": { "@opencode-ai/plugin": "^1.2.26" },
+  "devDependencies": { "@types/node": "^24.10.1", "typescript": "^5.0.0" }
+}
