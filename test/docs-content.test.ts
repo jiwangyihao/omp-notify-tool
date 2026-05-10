@@ -23,6 +23,10 @@ describe("README documentation", () => {
     expectIncludes(README, "`pi-poly-notify`");
     expectIncludes(README, "本包不是完成提醒插件");
     expectIncludes(README, "omp plugin install npm:omp-notify-tool@0.1.0");
+    expectIncludes(README, "Latest in v0.1.0 | v0.1.0 初始版本");
+    expectIncludes(README, "面向人类用户");
+    expectIncludes(README, "面向 LLM 智能体");
+    expectIncludes(README, "不要使用裸包名或 latest");
     expectIncludes(README, "omp plugin link <path-to-this-repo>");
     expectIncludes(README, "omp plugin doctor");
     expectIncludes(
@@ -38,6 +42,9 @@ describe("README documentation", () => {
     expectIncludes(README, "`success` 在 OMP/Pi UI 中降级为 `info`");
     expectIncludes(README, "`MPL-2.0`");
     expectIncludes(README, "[LICENSE](./LICENSE)");
+    expectIncludes(README, "What You Get");
+    expectIncludes(README, "For Humans");
+    expectIncludes(README, "For LLM Agents");
   });
 });
 
