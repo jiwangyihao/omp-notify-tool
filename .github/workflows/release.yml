@@ -29,8 +29,13 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Clear trusted publishing npmrc before Bun install
+        run: rm -f .npmrc
+
       - name: Install
         run: bun install --frozen-lockfile
+        env:
+          BUN_CONFIG_NO_VERIFY: true
 
       - name: Versions
         run: |
