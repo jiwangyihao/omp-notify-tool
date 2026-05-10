@@ -5,8 +5,10 @@
 ## 安装 / 升级
 
 ```bash
-omp plugin install npm:omp-notify-tool@0.2.0
+omp plugin install omp-notify-tool@0.2.0
 ```
+
+当前 OMP CLI（已验证 `omp/14.9.2`）不接受 `npm:` 前缀；请使用裸包名版本化命令。
 
 安装后可运行：
 

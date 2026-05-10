@@ -22,11 +22,11 @@ describe("README documentation", () => {
     expectIncludes(README, "`pi-notify`");
     expectIncludes(README, "`pi-poly-notify`");
     expectIncludes(README, "本包不是完成提醒插件");
-    expectIncludes(README, "omp plugin install npm:omp-notify-tool@0.2.0");
+    expectIncludes(README, "omp plugin install omp-notify-tool@0.2.0");
     expectIncludes(README, "Latest in v0.2.0 | v0.2.0 原生 OMP/Pi 语义");
     expectIncludes(README, "面向人类用户");
     expectIncludes(README, "面向 LLM 智能体");
-    expectIncludes(README, "不要使用裸包名或 latest");
+    expectIncludes(README, "不要省略版本号，不要使用 `latest`");
     expectIncludes(README, "omp plugin link <path-to-this-repo>");
     expectIncludes(README, "omp plugin doctor");
     expectIncludes(
@@ -73,7 +73,7 @@ describe("runtime compatibility documentation", () => {
 describe("v0.2.0 release notes", () => {
   test("summarize install, dual entry, boundaries, and runtime caveats", () => {
     expectIncludes(RELEASE_NOTES, "v0.2.0");
-    expectIncludes(RELEASE_NOTES, "omp plugin install npm:omp-notify-tool@0.2.0");
+    expectIncludes(RELEASE_NOTES, "omp plugin install omp-notify-tool@0.2.0");
     expectIncludes(RELEASE_NOTES, "OMP/Pi 双入口");
     expectIncludes(RELEASE_NOTES, "`pi-notify`");
     expectIncludes(RELEASE_NOTES, "`pi-poly-notify`");

@@ -74,7 +74,7 @@ describe("package manifest", () => {
   });
 
   test("documents the versioned npm installation command", () => {
-    expect(readme).toContain(`omp plugin install npm:omp-notify-tool@${packageJson.version}`);
+    expect(readme).toContain(`omp plugin install omp-notify-tool@${packageJson.version}`);
   });
 
   test("does not ship runtime dependencies on runtime SDK packages", () => {

@@ -43,7 +43,7 @@
 把下面这段话丢给 OMP / Claude Code / Cursor 等任意 LLM Agent：
 
 ```text
-请先查看 omp-notify-tool 最新 GitHub Release 正文里的安装或升级说明，然后严格执行其中带明确版本号的 OMP 安装命令。不要使用裸包名或 latest。安装后运行 `omp plugin doctor` 确认插件可用。如果 OMP 已经运行，安装或升级后重启会话再验证。参考说明：https://github.com/jiwangyihao/omp-notify-tool/releases/latest
+请先查看 omp-notify-tool 最新 GitHub Release 正文里的安装或升级说明，然后严格执行其中带明确版本号的 OMP 安装命令。不要省略版本号，不要使用 latest。安装后运行 `omp plugin doctor` 确认插件可用。如果 OMP 已经运行，安装或升级后重启会话再验证。参考说明：https://github.com/jiwangyihao/omp-notify-tool/releases/latest
 ```
 
 **选项 B：手动安装**
@@ -51,8 +51,10 @@
 当前版本：
 
 ```bash
-omp plugin install npm:omp-notify-tool@0.2.0
+omp plugin install omp-notify-tool@0.2.0
 ```
+
+当前 OMP CLI（已验证 `omp/14.9.2`）不接受 `npm:` 前缀；请使用上面的裸包名版本化命令。
 
 安装后检查插件状态：
 
@@ -76,10 +78,12 @@ omp plugin doctor
 2. 提取其中带明确版本号的安装命令。当前版本示例：
 
    ```bash
-   omp plugin install npm:omp-notify-tool@0.2.0
+   omp plugin install omp-notify-tool@0.2.0
    ```
 
-3. 直接执行该命令。不要使用裸包名或 `latest`，不要手动编辑 OMP/Pi 配置。
+   当前 OMP CLI（已验证 `omp/14.9.2`）不接受 `npm:` 前缀；不要把命令改成 `npm:omp-notify-tool@...`。
+
+3. 直接执行该命令。不要省略版本号，不要使用 `latest`，不要手动编辑 OMP/Pi 配置。
 
 4. 安装后运行：
 
@@ -184,7 +188,7 @@ Use it for progress updates, phase changes, and background status messages that 
 Paste this into any OMP / Claude Code / Cursor style LLM agent:
 
 ```text
-First read the latest GitHub Release for omp-notify-tool, then execute the exact versioned OMP install command from the release notes. Do not use a bare package name or latest. After installation, run `omp plugin doctor` to confirm the plugin is available. If OMP is already running, restart the session before verification. Reference: https://github.com/jiwangyihao/omp-notify-tool/releases/latest
+First read the latest GitHub Release for omp-notify-tool, then execute the exact versioned OMP install command from the release notes. Do not omit the version number or use latest. After installation, run `omp plugin doctor` to confirm the plugin is available. If OMP is already running, restart the session before verification. Reference: https://github.com/jiwangyihao/omp-notify-tool/releases/latest
 ```
 
 **Option B: Manual setup**
@@ -192,8 +196,10 @@ First read the latest GitHub Release for omp-notify-tool, then execute the exact
 Current version:
 
 ```bash
-omp plugin install npm:omp-notify-tool@0.2.0
+omp plugin install omp-notify-tool@0.2.0
 ```
+
+Current OMP CLI behavior (verified with `omp/14.9.2`) does not accept the `npm:` prefix; use the bare package name command above.
 
 Verify installation:
 
@@ -217,10 +223,12 @@ If OMP is already running, restart it before verification.
 2. Extract the exact versioned install command. Current version example:
 
    ```bash
-   omp plugin install npm:omp-notify-tool@0.2.0
+   omp plugin install omp-notify-tool@0.2.0
    ```
 
-3. Execute that command directly. Do not use a bare package name or `latest`, and do not hand-edit OMP/Pi configuration.
+   Current OMP CLI behavior (verified with `omp/14.9.2`) does not accept the `npm:` prefix; do not rewrite the command as `npm:omp-notify-tool@...`.
+
+3. Execute that command directly. Do not omit the version number, do not use `latest`, and do not hand-edit OMP/Pi configuration.
 
 4. After installation, run:
 

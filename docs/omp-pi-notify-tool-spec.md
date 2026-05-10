@@ -470,7 +470,7 @@ README 必须覆盖以下内容：
 4. 安装命令必须带明确版本号：
 
    ```bash
-   omp plugin install npm:omp-notify-tool@0.1.0
+   omp plugin install omp-notify-tool@0.1.0
    ```
 
 5. 本地开发链接：
@@ -531,7 +531,7 @@ README 必须覆盖以下内容：
 - `packageJson.bin` 未定义。
 - `keywords` 包含 `oh-my-pi`、`pi-package`、`omp`、`pi`、`extension`、`notify`。
 - `license` 为 `MPL-2.0`，且 `LICENSE` 存在。
-- README 包含当前版本安装命令：`omp plugin install npm:omp-notify-tool@${version}`。
+- README 包含当前版本安装命令：`omp plugin install omp-notify-tool@${version}`。
 - `files` 等于 `src`、`README.md`、`LICENSE`、`docs/runtime-compatibility.md`。
 - `files` 不包含 `docs/superpowers`、`test`、`dist`。
 - runtime dependencies 不包含：
@@ -732,7 +732,7 @@ release notes 必须包含：
 
 - 目标 OMP/Pi runtime 当前版本的 `ctx.ui.notify` 参数签名是否仍为 `(message, variant?)`。
 - `registerTool.execute` 的参数顺序是否与当前文档一致：`toolCallId, params, signal, onUpdate, ctx`。
-- `omp plugin install npm:omp-notify-tool@0.1.0` 在发布后能正确加载源码 `src/extension.ts`。
+- `omp plugin install omp-notify-tool@0.1.0` 在发布后能正确加载源码 `src/extension.ts`。
 - RPC 模式下 notify 是否可由客户端实际展示；若不能展示，工具仍应返回明确 skipped/failed。
 
 ## 18. 自检
