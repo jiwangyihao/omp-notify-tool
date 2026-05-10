@@ -135,12 +135,12 @@ describe("createNotifyTool", () => {
       },
       {
         hasUI: true,
-        ui: { notify: (payload) => calls.push(payload) },
+        ui: { notify: (message, type) => calls.push([message, type]) },
       },
     )
 
     expect(result.details?.delivered).toBe(true)
-    expect(calls).toEqual([{ type: "info", message: "phase 1" }])
+    expect(calls).toEqual([["phase 1", "info"]])
     expect(onUpdateCalled).toBe(false)
   })
 })
@@ -151,10 +151,10 @@ describe("executeNotify", () => {
 
     const result = await executeNotify(createApi(), { message: "running" }, createAbortSignal(false), {
       hasUI: true,
-      ui: { notify: (payload) => calls.push(payload) },
+      ui: { notify: (message, type) => calls.push([message, type]) },
     })
 
-    expect(calls).toEqual([{ type: "info", message: "running" }])
+    expect(calls).toEqual([["running", "info"]])
     expect(result).toEqual({
       content: [{ type: "text", text: "ok" }],
       details: { delivered: true, variant: "info", notifyType: "info" },
@@ -171,16 +171,16 @@ describe("executeNotify", () => {
     expect(result.details?.notifyType).toBe("warning")
   })
 
-  test("passes OMP/Pi notify payload object with type and message for each public variant", async () => {
+  test("passes OMP/Pi notify message and type arguments for each public variant", async () => {
     for (const variant of variants) {
       const calls: unknown[] = []
 
       const result = await executeNotify(createApi(), { message: "progress", variant }, createAbortSignal(false), {
         hasUI: true,
-        ui: { notify: (payload) => calls.push(payload) },
+        ui: { notify: (message, type) => calls.push([message, type]) },
       })
 
-      expect(calls).toEqual([{ type: variant, message: "progress" }])
+      expect(calls).toEqual([["progress", variant]])
       expect(result.details?.delivered).toBe(true)
       expect(result.details?.variant).toBe(variant)
       expect(result.details?.notifyType).toBe(variant)
@@ -192,10 +192,10 @@ describe("executeNotify", () => {
 
     const result = await executeNotify(createApi(), { message: "rpc background" }, createAbortSignal(false), {
       hasUI: false,
-      ui: { notify: (payload) => calls.push(payload) },
+      ui: { notify: (message, type) => calls.push([message, type]) },
     })
 
-    expect(calls).toEqual([{ type: "info", message: "rpc background" }])
+    expect(calls).toEqual([["rpc background", "info"]])
     expect(result.details).toEqual({ delivered: true, variant: "info", notifyType: "info" })
   })
 

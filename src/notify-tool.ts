@@ -120,7 +120,7 @@ export async function executeNotify(
   }
 
   try {
-    await notify({ type: variant, message: params.message })
+    await notify(params.message, variant)
     return result("ok", {
       delivered: true,
       ...details,

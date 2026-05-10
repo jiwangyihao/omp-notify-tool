@@ -4,9 +4,9 @@
 [![npm downloads](https://img.shields.io/npm/dw/omp-notify-tool.svg)](https://www.npmjs.com/package/omp-notify-tool)
 [![License: MPL-2.0](https://img.shields.io/badge/License-MPL--2.0-brightgreen.svg)](LICENSE)
 
-> **Latest in v0.2.1 | v0.2.1 TUI 通知修复**
+> **Latest in v0.2.2 | v0.2.2 官方 notify 签名修复**
 >
-> - Calls OMP UI notify with `{ type, message }` so TUI notifications are visible | 使用 `{ type, message }` 调用 OMP UI notify，确保 TUI 可见
+> - Uses OMP official `ctx.ui.notify(message, type)` signature | 使用 OMP 官方 `ctx.ui.notify(message, type)` 签名
 > - Declares both `omp.extensions` and legacy `pi.extensions` entries | 同时声明 `omp.extensions` 与 legacy `pi.extensions` 入口
 > - Keeps progress updates separate from `question`, `wait`, and completion notifications | 将进度提示与 `question`、`wait` 和完成提醒分离
 > - Falls open when UI notification is unavailable or fails | UI 通知不可用或失败时保持 fail-open
@@ -51,7 +51,7 @@
 当前版本：
 
 ```bash
-omp plugin install omp-notify-tool@0.2.1
+omp plugin install omp-notify-tool@0.2.2
 ```
 
 当前 OMP CLI（已验证 `omp/14.9.3`）不接受 `npm:` 前缀；请使用上面的裸包名版本化命令。
@@ -78,7 +78,7 @@ omp plugin doctor
 2. 提取其中带明确版本号的安装命令。当前版本示例：
 
    ```bash
-   omp plugin install omp-notify-tool@0.2.1
+   omp plugin install omp-notify-tool@0.2.2
    ```
 
    当前 OMP CLI（已验证 `omp/14.9.3`）不接受 `npm:` 前缀；不要把命令改成 `npm:omp-notify-tool@...`。
@@ -196,7 +196,7 @@ First read the latest GitHub Release for omp-notify-tool, then execute the exact
 Current version:
 
 ```bash
-omp plugin install omp-notify-tool@0.2.1
+omp plugin install omp-notify-tool@0.2.2
 ```
 
 Current OMP CLI behavior (verified with `omp/14.9.3`) does not accept the `npm:` prefix; use the bare package name command above.
@@ -223,7 +223,7 @@ If OMP is already running, restart it before verification.
 2. Extract the exact versioned install command. Current version example:
 
    ```bash
-   omp plugin install omp-notify-tool@0.2.1
+   omp plugin install omp-notify-tool@0.2.2
    ```
 
    Current OMP CLI behavior (verified with `omp/14.9.3`) does not accept the `npm:` prefix; do not rewrite the command as `npm:omp-notify-tool@...`.

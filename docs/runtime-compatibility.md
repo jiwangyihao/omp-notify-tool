@@ -9,7 +9,7 @@
 - 能加载 npm package manifest 中的 extension entry。
 - 能调用 extension factory，并提供 `registerTool` 注册模型可调用工具。
 - 工具执行上下文能表达当前 UI 状态，例如 `ctx.hasUI`。
-- UI 可用时提供 `ctx.ui.notify({ type, message })`，其中 `type` 为 `info`、`warning` 或 `error`。
+- UI 可用时提供 `ctx.ui.notify(message, type)`，其中 `type` 为 `info`、`warning` 或 `error`。
 
 本包不依赖 active-tools、provider request hook、message renderer、custom UI、外部通知服务或运行时 core package 作为 runtime dependency。
 

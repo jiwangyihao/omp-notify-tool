@@ -16,15 +16,12 @@ export interface AgentToolResultLike {
   details?: Record<string, unknown>
 }
 
-export interface RuntimeNotifyPayload {
-  type: RuntimeNotifyType
-  message: string
-}
+
 
 export interface ExtensionContextLike {
   hasUI?: boolean
   ui?: {
-    notify?: (payload: RuntimeNotifyPayload) => void | Promise<void>
+    notify?: (message: string, type?: RuntimeNotifyType) => void | Promise<void>
   }
   logger?: {
     warn?: (message: string, error?: unknown) => void
