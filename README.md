@@ -4,9 +4,9 @@
 [![npm downloads](https://img.shields.io/npm/dw/omp-notify-tool.svg)](https://www.npmjs.com/package/omp-notify-tool)
 [![License: MPL-2.0](https://img.shields.io/badge/License-MPL--2.0-brightgreen.svg)](LICENSE)
 
-> **Latest in v0.2.0 | v0.2.0 原生 OMP/Pi 语义**
+> **Latest in v0.2.1 | v0.2.1 TUI 通知修复**
 >
-> - Uses OMP/Pi-native `variant` values only: `info`, `warning`, `error` | 仅使用 OMP/Pi 原生 `variant`：`info`、`warning`、`error`
+> - Calls OMP UI notify with `{ type, message }` so TUI notifications are visible | 使用 `{ type, message }` 调用 OMP UI notify，确保 TUI 可见
 > - Declares both `omp.extensions` and legacy `pi.extensions` entries | 同时声明 `omp.extensions` 与 legacy `pi.extensions` 入口
 > - Keeps progress updates separate from `question`, `wait`, and completion notifications | 将进度提示与 `question`、`wait` 和完成提醒分离
 > - Falls open when UI notification is unavailable or fails | UI 通知不可用或失败时保持 fail-open
@@ -51,10 +51,10 @@
 当前版本：
 
 ```bash
-omp plugin install omp-notify-tool@0.2.0
+omp plugin install omp-notify-tool@0.2.1
 ```
 
-当前 OMP CLI（已验证 `omp/14.9.2`）不接受 `npm:` 前缀；请使用上面的裸包名版本化命令。
+当前 OMP CLI（已验证 `omp/14.9.3`）不接受 `npm:` 前缀；请使用上面的裸包名版本化命令。
 
 安装后检查插件状态：
 
@@ -78,10 +78,10 @@ omp plugin doctor
 2. 提取其中带明确版本号的安装命令。当前版本示例：
 
    ```bash
-   omp plugin install omp-notify-tool@0.2.0
+   omp plugin install omp-notify-tool@0.2.1
    ```
 
-   当前 OMP CLI（已验证 `omp/14.9.2`）不接受 `npm:` 前缀；不要把命令改成 `npm:omp-notify-tool@...`。
+   当前 OMP CLI（已验证 `omp/14.9.3`）不接受 `npm:` 前缀；不要把命令改成 `npm:omp-notify-tool@...`。
 
 3. 直接执行该命令。不要省略版本号，不要使用 `latest`，不要手动编辑 OMP/Pi 配置。
 
@@ -196,10 +196,10 @@ First read the latest GitHub Release for omp-notify-tool, then execute the exact
 Current version:
 
 ```bash
-omp plugin install omp-notify-tool@0.2.0
+omp plugin install omp-notify-tool@0.2.1
 ```
 
-Current OMP CLI behavior (verified with `omp/14.9.2`) does not accept the `npm:` prefix; use the bare package name command above.
+Current OMP CLI behavior (verified with `omp/14.9.3`) does not accept the `npm:` prefix; use the bare package name command above.
 
 Verify installation:
 
@@ -223,10 +223,10 @@ If OMP is already running, restart it before verification.
 2. Extract the exact versioned install command. Current version example:
 
    ```bash
-   omp plugin install omp-notify-tool@0.2.0
+   omp plugin install omp-notify-tool@0.2.1
    ```
 
-   Current OMP CLI behavior (verified with `omp/14.9.2`) does not accept the `npm:` prefix; do not rewrite the command as `npm:omp-notify-tool@...`.
+   Current OMP CLI behavior (verified with `omp/14.9.3`) does not accept the `npm:` prefix; do not rewrite the command as `npm:omp-notify-tool@...`.
 
 3. Execute that command directly. Do not omit the version number, do not use `latest`, and do not hand-edit OMP/Pi configuration.
 

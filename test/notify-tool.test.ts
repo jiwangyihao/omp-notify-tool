@@ -123,7 +123,7 @@ describe("createNotifyTool", () => {
 
   test("execute delegates runtime execution without emitting streaming updates", async () => {
     let onUpdateCalled = false
-    const calls: Array<[string, string | undefined]> = []
+    const calls: unknown[] = []
     const tool = createNotifyTool(createApi())
 
     const result = await tool.execute(
@@ -135,26 +135,26 @@ describe("createNotifyTool", () => {
       },
       {
         hasUI: true,
-        ui: { notify: (message, notifyType) => calls.push([message, notifyType]) },
+        ui: { notify: (payload) => calls.push(payload) },
       },
     )
 
     expect(result.details?.delivered).toBe(true)
-    expect(calls).toEqual([["phase 1", "info"]])
+    expect(calls).toEqual([{ type: "info", message: "phase 1" }])
     expect(onUpdateCalled).toBe(false)
   })
 })
 
 describe("executeNotify", () => {
   test("defaults variant to info and returns structured delivered result when UI succeeds", async () => {
-    const calls: Array<[string, string | undefined]> = []
+    const calls: unknown[] = []
 
     const result = await executeNotify(createApi(), { message: "running" }, createAbortSignal(false), {
       hasUI: true,
-      ui: { notify: (message, notifyType) => calls.push([message, notifyType]) },
+      ui: { notify: (payload) => calls.push(payload) },
     })
 
-    expect(calls).toEqual([["running", "info"]])
+    expect(calls).toEqual([{ type: "info", message: "running" }])
     expect(result).toEqual({
       content: [{ type: "text", text: "ok" }],
       details: { delivered: true, variant: "info", notifyType: "info" },
@@ -171,33 +171,32 @@ describe("executeNotify", () => {
     expect(result.details?.notifyType).toBe("warning")
   })
 
-  test("uses each public variant directly as the runtime notify type", async () => {
+  test("passes OMP/Pi notify payload object with type and message for each public variant", async () => {
     for (const variant of variants) {
-      const calls: Array<[string, string | undefined]> = []
+      const calls: unknown[] = []
 
       const result = await executeNotify(createApi(), { message: "progress", variant }, createAbortSignal(false), {
         hasUI: true,
-        ui: { notify: (message, notifyType) => calls.push([message, notifyType]) },
+        ui: { notify: (payload) => calls.push(payload) },
       })
 
-      expect(calls).toEqual([["progress", variant]])
+      expect(calls).toEqual([{ type: variant, message: "progress" }])
       expect(result.details?.delivered).toBe(true)
       expect(result.details?.variant).toBe(variant)
       expect(result.details?.notifyType).toBe(variant)
     }
   })
 
-  test("skips without calling UI when context has no UI", async () => {
-    let notifyCalled = false
+  test("uses notify capability when present even if hasUI is false", async () => {
+    const calls: unknown[] = []
 
-    const result = await executeNotify(createApi(), { message: "background" }, createAbortSignal(false), {
+    const result = await executeNotify(createApi(), { message: "rpc background" }, createAbortSignal(false), {
       hasUI: false,
-      ui: { notify: () => { notifyCalled = true } },
+      ui: { notify: (payload) => calls.push(payload) },
     })
 
-    expect(notifyCalled).toBe(false)
-    expect(result.content[0]?.text).toBe("notify skipped: UI unavailable")
-    expect(result.details).toEqual({ delivered: false, reason: "ui_unavailable", variant: "info", notifyType: "info" })
+    expect(calls).toEqual([{ type: "info", message: "rpc background" }])
+    expect(result.details).toEqual({ delivered: true, variant: "info", notifyType: "info" })
   })
 
   test("skips when UI notify method is missing", async () => {

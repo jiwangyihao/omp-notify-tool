@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, readFileSync } from "node:fs";
 
 const README = readFileSync("README.md", "utf8");
-const RELEASE_NOTES = readFileSync("docs/release-notes-v0.2.0.md", "utf8");
+const RELEASE_NOTES = readFileSync("docs/release-notes-v0.2.1.md", "utf8");
 const RUNTIME_COMPATIBILITY_PATH = "docs/runtime-compatibility.md";
 
 function expectIncludes(text: string, expected: string) {
@@ -22,8 +22,8 @@ describe("README documentation", () => {
     expectIncludes(README, "`pi-notify`");
     expectIncludes(README, "`pi-poly-notify`");
     expectIncludes(README, "本包不是完成提醒插件");
-    expectIncludes(README, "omp plugin install omp-notify-tool@0.2.0");
-    expectIncludes(README, "Latest in v0.2.0 | v0.2.0 原生 OMP/Pi 语义");
+    expectIncludes(README, "omp plugin install omp-notify-tool@0.2.1");
+    expectIncludes(README, "Latest in v0.2.1 | v0.2.1 TUI 通知修复");
     expectIncludes(README, "面向人类用户");
     expectIncludes(README, "面向 LLM 智能体");
     expectIncludes(README, "不要省略版本号，不要使用 `latest`");
@@ -70,16 +70,14 @@ describe("runtime compatibility documentation", () => {
   });
 });
 
-describe("v0.2.0 release notes", () => {
+describe("v0.2.1 release notes", () => {
   test("summarize install, dual entry, boundaries, and runtime caveats", () => {
-    expectIncludes(RELEASE_NOTES, "v0.2.0");
-    expectIncludes(RELEASE_NOTES, "omp plugin install omp-notify-tool@0.2.0");
-    expectIncludes(RELEASE_NOTES, "OMP/Pi 双入口");
-    expectIncludes(RELEASE_NOTES, "`pi-notify`");
-    expectIncludes(RELEASE_NOTES, "`pi-poly-notify`");
-    expectIncludes(RELEASE_NOTES, "完成提醒");
-    expect(RELEASE_NOTES).toMatch(/headless\s*\/\s*subagent/);
-    expectIncludes(RELEASE_NOTES, "skipped");
-    expectIncludes(RELEASE_NOTES, "`variant` 只支持 OMP/Pi UI notify 类型：`info`、`warning`、`error`");
+    expectIncludes(RELEASE_NOTES, "v0.2.1");
+    expectIncludes(RELEASE_NOTES, "omp plugin install omp-notify-tool@0.2.1");
+    expectIncludes(RELEASE_NOTES, "ctx.ui.notify({ type, message })");
+    expectIncludes(RELEASE_NOTES, "`hasUI: false`");
+    expectIncludes(RELEASE_NOTES, "`variant` 支持范围为 `info`、`warning`、`error`");
+    expectIncludes(RELEASE_NOTES, "fail-open");
+    expectIncludes(RELEASE_NOTES, "ctx.ui.notify` 缺失、抛错或 rejected");
   });
 });

@@ -9,7 +9,7 @@
 - 能加载 npm package manifest 中的 extension entry。
 - 能调用 extension factory，并提供 `registerTool` 注册模型可调用工具。
 - 工具执行上下文能表达当前 UI 状态，例如 `ctx.hasUI`。
-- UI 可用时提供 `ctx.ui.notify(message, notifyType)`，其中 `notifyType` 为 `info`、`warning` 或 `error`。
+- UI 可用时提供 `ctx.ui.notify({ type, message })`，其中 `type` 为 `info`、`warning` 或 `error`。
 
 本包不依赖 active-tools、provider request hook、message renderer、custom UI、外部通知服务或运行时 core package 作为 runtime dependency。
 
@@ -17,9 +17,9 @@
 
 | Runtime 模式 | 能力门槛 | 预期行为 |
 | --- | --- | --- |
-| OMP interactive | extension entry、`registerTool`、`ctx.hasUI === true`、`ctx.ui.notify` | 展示非阻塞通知；工具结果表达 delivered |
+| OMP interactive | extension entry、`registerTool`、`ctx.ui.notify` | 展示非阻塞通知；工具结果表达 delivered |
 | OMP RPC | 宿主支持 fire-and-forget `notify` UI request | 通过 RPC UI notify 通道发送；不要求用户响应 |
-| headless/subagent | `ctx.hasUI !== true` 或 `ctx.ui.notify` 不可用 | 不调用 UI，返回 skipped，不中断主任务 |
+| headless/subagent | `ctx.ui.notify` 不可用 | 不调用 UI，返回 skipped，不中断主任务 |
 | Pi-family | manifest 支持 legacy `pi.extensions`，并提供兼容 extension API | 能力满足时行为同 OMP；未满足时返回 skipped 或 failed |
 
 ## 已知限制

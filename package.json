@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "omp-notify-tool",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Model-callable non-blocking notify tool for OMP and Pi-family runtimes.",
   "repository": {
     "type": "git",
@@ -46,7 +46,7 @@
     "README.md",
     "LICENSE",
     "docs/runtime-compatibility.md",
-    "docs/release-notes-v0.2.0.md"
+    "docs/release-notes-v0.2.1.md"
   ],
   "devDependencies": {
     "bun-types": "^1.3.1",

@@ -111,7 +111,7 @@ export async function executeNotify(
   }
 
   const notify = ctx?.ui?.notify
-  if (ctx?.hasUI !== true || typeof notify !== "function") {
+  if (typeof notify !== "function") {
     return result("notify skipped: UI unavailable", {
       delivered: false,
       reason: "ui_unavailable",
@@ -120,7 +120,7 @@ export async function executeNotify(
   }
 
   try {
-    await notify(params.message, variant)
+    await notify({ type: variant, message: params.message })
     return result("ok", {
       delivered: true,
       ...details,
