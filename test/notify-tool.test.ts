@@ -3,7 +3,7 @@ import { describe, expect, test } from "bun:test"
 import { NOTIFY_TOOL_DESCRIPTION, createNotifyTool, executeNotify } from "../src/notify-tool"
 import type { ExtensionApiLike, ExtensionContextLike, NotifyParams } from "../src/types"
 
-const variants = ["info", "success", "warning", "error"] as const
+const variants = ["info", "warning", "error"] as const
 
 function createTypeboxStub() {
   return {
@@ -118,6 +118,7 @@ describe("createNotifyTool", () => {
     }
 
     expect(validateNotifyParams(schema, { message: "progress", variant: "debug" }).success).toBe(false)
+    expect(validateNotifyParams(schema, { message: "progress", variant: "success" }).success).toBe(false)
   })
 
   test("execute delegates runtime execution without emitting streaming updates", async () => {
@@ -170,18 +171,20 @@ describe("executeNotify", () => {
     expect(result.details?.notifyType).toBe("warning")
   })
 
-  test("maps success variant to info notify type while preserving public variant", async () => {
-    const calls: Array<[string, string | undefined]> = []
+  test("uses each public variant directly as the runtime notify type", async () => {
+    for (const variant of variants) {
+      const calls: Array<[string, string | undefined]> = []
 
-    const result = await executeNotify(createApi(), { message: "done", variant: "success" }, createAbortSignal(false), {
-      hasUI: true,
-      ui: { notify: (message, notifyType) => calls.push([message, notifyType]) },
-    })
+      const result = await executeNotify(createApi(), { message: "progress", variant }, createAbortSignal(false), {
+        hasUI: true,
+        ui: { notify: (message, notifyType) => calls.push([message, notifyType]) },
+      })
 
-    expect(calls).toEqual([["done", "info"]])
-    expect(result.details?.delivered).toBe(true)
-    expect(result.details?.variant).toBe("success")
-    expect(result.details?.notifyType).toBe("info")
+      expect(calls).toEqual([["progress", variant]])
+      expect(result.details?.delivered).toBe(true)
+      expect(result.details?.variant).toBe(variant)
+      expect(result.details?.notifyType).toBe(variant)
+    }
   })
 
   test("skips without calling UI when context has no UI", async () => {

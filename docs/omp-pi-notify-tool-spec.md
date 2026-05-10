@@ -19,14 +19,14 @@
 
 该工具用于进度、阶段切换、后台状态提示，不要求用户响应。需要用户确认、授权、选择、最终交接或无安全工作可继续时，应继续使用 `question` 或宿主对应的交互工具。
 
-OMP/Pi 已有 extension、自定义工具和 UI 通知能力。缺口是：尚未发现一个与当前 OpenCode 包同语义的 OMP/Pi 原生模型可调用 `notify` 工具包。
+OMP/Pi 已有 extension、自定义工具和 UI 通知能力。缺口是：尚未发现一个贴合 OMP/Pi UI 通知能力的原生模型可调用 `notify` 工具包。
 
 ## 2. 目标
 
 移植后的新包提供一个同时支持 OMP 和 Pi-family runtime 的 extension：
 
 - 注册一个模型可调用工具 `notify`。
-- 保留 OpenCode 版本的业务契约：`message` 必填，`variant` 可选且限制为 `info | success | warning | error`。
+- 定义 OMP/Pi 原生业务契约：`message` 必填，`variant` 可选且限制为 `info | warning | error`。
 - 使用 OMP/Pi 的 `ctx.ui.notify(message, variant)` 作为展示通道。
 - 在无 UI、headless、subagent、后台或 UI 调用失败时 fail-open，不阻塞主 Agent 工作。
 - 包安装本身不修改用户配置，不写入 agent，不禁用任何内置工具。
@@ -216,7 +216,7 @@ const parameters = Type.Object({
     description: "Progress message to show without blocking.",
   }),
   variant: Type.Optional(
-    StringEnum(["info", "success", "warning", "error"] as const, {
+    StringEnum(["info", "warning", "error"] as const, {
       description: "Notification variant. Defaults to info.",
     }),
   ),
@@ -226,7 +226,7 @@ const parameters = Type.Object({
 约束：
 
 - 首选 `pi.pi.StringEnum`，因为 OMP/Pi 的 provider tool schema 对字符串枚举有兼容性要求。
-- 如果目标 runtime 暂时没有注入 `pi.pi.StringEnum`，实现必须提供本地 fallback，生成等价 JSON schema：`{ type: "string", enum: ["info", "success", "warning", "error"] }`。
+- 如果目标 runtime 暂时没有注入 `pi.pi.StringEnum`，实现必须提供本地 fallback，生成等价 JSON schema：`{ type: "string", enum: ["info", "warning", "error"] }`。
 - 不得使用 `Type.Union([Type.Literal(...)])` 表达 `variant`，避免部分 provider 无法识别字符串枚举。
 
 首版不开放这些字段：
@@ -240,11 +240,11 @@ const parameters = Type.Object({
 - `sticky`
 - `actions`
 
-原因：当前 OpenCode 版本的测试已明确排除这些扩展字段。OMP/Pi 版本应先保持同语义迁移，避免把进度工具膨胀成通知系统。
+原因：OMP/Pi 版本应保持小而稳定的进度工具边界，避免把进度工具膨胀成通知系统。
 
 ### 7.4 空白字符串
 
-OpenCode 版本只要求 `message.min(1)`，没有额外 trim。OMP/Pi 版本首版应保持兼容：
+OMP/Pi 版本首版只要求 `message.minLength === 1`，不额外 trim：
 
 - 空字符串 `""`：由 schema 拒绝。
 - 纯空白字符串：不额外拒绝。
@@ -255,11 +255,11 @@ OpenCode 版本只要求 `message.min(1)`，没有额外 trim。OMP/Pi 版本首
 
 ### 8.1 成功路径
 
-公开工具参数保留 OpenCode 兼容的 `success` variant，但 OMP/Pi 当前 UI notify 类型只应接收 `info | warning | error`。执行前必须计算运行时通知类型：
+公开工具参数直接贴合 OMP/Pi UI notify 类型，只接收 `info | warning | error`。执行前只需应用默认值：
 
 ```ts
 const variant = params.variant ?? "info";
-const notifyType = variant === "success" ? "info" : variant;
+const notifyType = variant;
 ```
 
 当 UI 可用且 `ctx.ui.notify` 调用成功：
@@ -275,7 +275,7 @@ return {
 };
 ```
 
-`details.variant` 保留模型传入或默认后的公开 variant；`details.notifyType` 记录实际传给 OMP/Pi UI 的类型。`success` 在 OMP/Pi UI 中降级为 `info`，README 与 runtime compatibility 文档必须说明这一点。
+`details.variant` 保留模型传入或默认后的公开 variant；`details.notifyType` 记录实际传给 OMP/Pi UI 的类型。当前二者应保持一致。
 
 ### 8.2 无 UI 路径
 
@@ -347,7 +347,7 @@ warn(ctx.logger, `[omp-notify-tool] notify failed: ${detail}`, error);
 定义最小 runtime-like 类型，避免依赖 OMP/Pi core 包：
 
 ```ts
-export type NotifyVariant = "info" | "success" | "warning" | "error";
+export type NotifyVariant = "info" | "warning" | "error";
 export type RuntimeNotifyType = "info" | "warning" | "error";
 
 export interface NotifyParams {
@@ -416,7 +416,7 @@ export function createNotifyTool(api: ExtensionApiLike) {
         description: "Progress message to show without blocking.",
       }),
       variant: Type.Optional(
-        StringEnum(["info", "success", "warning", "error"] as const, {
+        StringEnum(["info", "warning", "error"] as const, {
           description: "Notification variant. Defaults to info.",
         }),
       ),
@@ -494,7 +494,7 @@ README 必须覆盖以下内容：
    }
    ```
 
-8. 运行模式说明：interactive/RPC 可通知，headless/subagent 可能 skipped；`variant: "success"` 在 OMP/Pi UI 中降级为 `info`，但 tool result 会保留 `details.variant = "success"` 与 `details.notifyType = "info"`。
+8. 运行模式说明：interactive/RPC 可通知，headless/subagent 可能 skipped；`variant` 只支持 `info`、`warning`、`error`，且 tool result 中 `details.notifyType` 与最终使用的 `variant` 一致。
 
 9. Pi-family runtime 通过同一个 npm 包的 legacy `pi.extensions` 入口加载。若目标 Pi CLI 的安装命令与 OMP 不同，应在实现阶段验证后补充对应命令；未验证前不要写成事实。
 
@@ -563,12 +563,11 @@ README 必须覆盖以下内容：
 - schema 拒绝空字符串 `""`。
 - schema 接受普通非空字符串。
 - 首版不额外拒绝纯空白字符串。
-- `variant` 枚举只允许 `info`、`success`、`warning`、`error`。
+- `variant` 枚举只允许 `info`、`warning`、`error`。
 - `variant` schema 使用 `StringEnum` 或等价 `{ type: "string", enum: [...] }`，不使用 `Type.Union([Type.Literal(...)])`。
 - 不暴露 `title`、`duration`、`channel`、`dedupeKey`、`sound`、`desktop`、`sticky`。
 - 缺省 `variant` 时调用 UI 使用 `notifyType = "info"`。
 - 显式 `variant` 会保留在 `details.variant`。
-- `variant = "success"` 时调用 UI 的第二个参数是 `"info"`，并返回 `details.variant = "success"`、`details.notifyType = "info"`。
 - UI 可用时返回结构化 tool result：`content[0].text === "ok"`，`details.delivered === true`，`details.variant === 实际 variant`，`details.notifyType === 实际 UI notify type`。
 - `ctx.hasUI = false` 时不调用 UI，返回 skipped，`details.delivered = false`。
 - `ctx.ui.notify` 缺失时返回 skipped。
@@ -591,10 +590,10 @@ README 必须覆盖以下内容：
 - README 包含 `omp plugin doctor`。
 - README 包含工具参数 JSON 示例。
 - README 包含 interactive、RPC、headless/subagent 说明。
-- README 包含 `success` 降级为 `info` 的说明。
+- README 包含 `variant` 只支持 `info`、`warning`、`error` 的说明。
 - README 包含 `MPL-2.0` 并链接 `LICENSE`。
 - `docs/runtime-compatibility.md` 存在，并覆盖 OMP interactive、OMP RPC、headless/subagent、Pi-family，以及“不声明未验证 runtime 一定支持”。
-- `docs/release-notes-v0.1.0.md` 存在，并包含版本号、版本化安装命令、OMP/Pi 双入口、完成提醒插件边界、headless/subagent skipped 说明、`success` 降级说明。
+- `docs/release-notes-v0.1.0.md` 存在，并包含版本号、版本化安装命令、OMP/Pi 双入口、完成提醒插件边界、headless/subagent skipped 说明、`variant` 支持范围说明。
 
 ### 12.5 `test/release-workflow.test.ts`
 
@@ -640,7 +639,7 @@ release notes 必须包含：
 - OMP/Pi 双入口说明。
 - 与 `pi-notify` / `pi-poly-notify` 的边界。
 - headless/subagent 可能返回 skipped 的说明。
-- `success` variant 在 OMP/Pi UI 中降级为 `info` 的说明。
+- `variant` 只支持 `info`、`warning`、`error` 的说明。
 
 ## 14. 安全与可靠性要求
 

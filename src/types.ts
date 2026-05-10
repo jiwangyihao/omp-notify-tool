@@ -1,5 +1,5 @@
-export type NotifyVariant = "info" | "success" | "warning" | "error"
-export type RuntimeNotifyType = "info" | "warning" | "error"
+export type NotifyVariant = "info" | "warning" | "error"
+export type RuntimeNotifyType = NotifyVariant
 
 export interface NotifyParams {
   message: string

@@ -39,7 +39,7 @@ describe("README documentation", () => {
     expectIncludes(README, "interactive");
     expectIncludes(README, "RPC");
     expect(README).toMatch(/headless\s*\/\s*subagent/);
-    expectIncludes(README, "`success` 在 OMP/Pi UI 中降级为 `info`");
+    expectIncludes(README, "`variant`：可选，只能是 `info`、`warning`、`error`；缺省为 `info`");
     expectIncludes(README, "`MPL-2.0`");
     expectIncludes(README, "[LICENSE](./LICENSE)");
     expectIncludes(README, "What You Get");
@@ -65,6 +65,8 @@ describe("runtime compatibility documentation", () => {
     expectIncludes(runtimeCompatibility, "Pi-family");
     expectIncludes(runtimeCompatibility, "legacy `pi.extensions`");
     expectIncludes(runtimeCompatibility, "不声明未验证 runtime 一定支持");
+    expectIncludes(runtimeCompatibility, "`variant` 只支持 OMP/Pi UI notify 类型：`info`、`warning`、`error`");
+    expectIncludes(runtimeCompatibility, "本包不做跨宿主语义转换");
   });
 });
 
@@ -78,6 +80,6 @@ describe("v0.1.0 release notes", () => {
     expectIncludes(RELEASE_NOTES, "完成提醒");
     expect(RELEASE_NOTES).toMatch(/headless\s*\/\s*subagent/);
     expectIncludes(RELEASE_NOTES, "skipped");
-    expectIncludes(RELEASE_NOTES, "`success` 在 OMP/Pi UI 中降级为 `info`");
+    expectIncludes(RELEASE_NOTES, "`variant` 只支持 `info`、`warning`、`error`");
   });
 });

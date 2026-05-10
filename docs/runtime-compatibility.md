@@ -24,7 +24,8 @@
 
 ## 已知限制
 
-- `variant: "success"` 是公开工具参数的一部分，但 OMP/Pi UI notify 类型只应接收 `info`、`warning`、`error`。执行时会将 `success` 降级为 `info`，并在 tool result 中保留 `details.variant = "success"` 与 `details.notifyType = "info"`。
+- `variant` 只支持 OMP/Pi UI notify 类型：`info`、`warning`、`error`。
+- `details.notifyType` 与最终使用的 `variant` 一致；本包不做跨宿主语义转换。
 - 无 UI、headless、subagent 或 `ctx.ui.notify` 缺失时，工具会返回 skipped，而不是把未展示的通知伪装成 delivered。
 - `ctx.ui.notify` 抛错或返回 rejected promise 时，工具会返回 failed/continuing，并保持 fail-open。
 - 本文档不声明未验证 runtime 一定支持；Pi-family 的具体 CLI 安装命令和各 runtime 的实际 RPC 展示行为应在对应版本验证后再记录。

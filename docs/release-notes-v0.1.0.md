@@ -18,7 +18,7 @@ omp plugin doctor
 
 - 新增 `notify` 工具，参数为必填 `message` 和可选 `variant`。
 - 同一个 npm 包提供 OMP/Pi 双入口：`omp.extensions` 与 legacy `pi.extensions` 都指向 `./src/extension.ts`。
-- 保留 OpenCode 版语义：`variant` 支持 `info`、`success`、`warning`、`error`，缺省为 `info`。
+- `variant` 直接贴合 OMP/Pi UI 通知类型，只支持 `info`、`warning`、`error`，缺省为 `info`。
 - 通知失败保持 fail-open，不阻塞主 Agent 工作。
 
 ## 边界说明
@@ -31,4 +31,4 @@ omp plugin doctor
 
 - OMP interactive 或支持 RPC UI notify 的运行时可展示非阻塞通知。
 - headless/subagent、无 UI 或 `ctx.ui.notify` 缺失时，工具会返回 skipped，不会把未展示伪装成 delivered。
-- `success` 在 OMP/Pi UI 中降级为 `info`；tool result 会保留 `details.variant = "success"` 和 `details.notifyType = "info"`。
+- `variant` 只支持 `info`、`warning`、`error`；工具结果中的 `details.notifyType` 与最终使用的 `variant` 一致。

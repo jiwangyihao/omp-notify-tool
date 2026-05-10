@@ -21,7 +21,7 @@
 
 `omp-notify-tool` 为 OMP 和 Pi-family runtime 提供模型可调用的非阻塞 `notify` 工具。
 
-`notify` 用于进度、阶段切换和后台状态提示，不要求用户立即响应。它保留 OpenCode 版的参数语义，同时通过 OMP/Pi extension 入口注册到宿主运行时。
+`notify` 用于进度、阶段切换和后台状态提示，不要求用户立即响应。参数语义直接贴合 OMP/Pi UI 通知能力，并通过 OMP/Pi extension 入口注册到宿主运行时。
 
 ## 功能一览
 
@@ -126,7 +126,7 @@ npm pack --dry-run --json
 ```
 
 - `message`：必填，非空字符串。
-- `variant`：可选，只能是 `info`、`success`、`warning`、`error`；缺省为 `info`。
+- `variant`：可选，只能是 `info`、`warning`、`error`；缺省为 `info`。
 
 ## 使用边界
 
@@ -143,11 +143,6 @@ npm pack --dry-run --json
 - **headless/subagent**：无 UI、后台或子代理场景可能返回 skipped；工具会 fail open，不中断主任务。
 - **Pi-family runtime**：同一个 npm 包通过 legacy `pi.extensions` 入口加载。目标 Pi runtime 仍需提供兼容的 extension API 和 `ctx.ui.notify` 能力；未验证的安装命令或运行时行为不在本文中写成事实。
 
-## `success` variant
-
-公开参数保留 `success`，便于兼容已有 OpenCode 语义。OMP/Pi UI 的通知类型只接收 `info`、`warning`、`error`，因此 `success` 在 OMP/Pi UI 中降级为 `info`。
-
-工具结果仍会保留原始意图和实际通知类型：`details.variant = "success"`，`details.notifyType = "info"`。
 
 ## 相关版本
 
@@ -157,7 +152,7 @@ npm pack --dry-run --json
   opencode plugin opencode-notify-tool@0.1.0 --force -g
   ```
 
-- 两个包共享 `notify({ message, variant })` 的业务语义，但宿主适配层不同。不要把 OMP/Pi 包直接装到 OpenCode，也不要把 OpenCode 包直接装到 OMP/Pi。
+- 两个包都提供模型可调用的非阻塞 `notify` 进度提示，但宿主适配层和可用 `variant` 集合不同。不要把 OMP/Pi 包直接装到 OpenCode，也不要把 OpenCode 包直接装到 OMP/Pi。
 
 ---
 
@@ -270,7 +265,7 @@ npm pack --dry-run --json
 ```
 
 - `message`: required, non-empty string.
-- `variant`: optional, one of `info`, `success`, `warning`, or `error`; defaults to `info`.
+- `variant`: optional, one of `info`, `warning`, or `error`; defaults to `info`.
 
 ## Runtime Modes
 
@@ -279,11 +274,6 @@ npm pack --dry-run --json
 - **headless/subagent**: may return skipped; the tool fails open and does not interrupt the main task.
 - **Pi-family runtime**: loads through the legacy `pi.extensions` package entry. The target runtime must provide compatible extension APIs and `ctx.ui.notify`.
 
-## `success` Variant
-
-The public input keeps `success` for compatibility with the original OpenCode semantics. OMP/Pi UI notify types accept only `info`, `warning`, and `error`, so `success` is downgraded to `info` at the UI boundary.
-
-The tool result still preserves both values: `details.variant = "success"`, `details.notifyType = "info"`.
 
 ## Companion Package
 
@@ -293,7 +283,7 @@ The tool result still preserves both values: `details.variant = "success"`, `det
   opencode plugin opencode-notify-tool@0.1.0 --force -g
   ```
 
-- Both packages share the `notify({ message, variant })` contract, but their host adapters are different. Do not install the OMP/Pi package into OpenCode or the OpenCode package into OMP/Pi.
+- Both packages provide a model-callable, non-blocking `notify` progress tool, but their host adapters and supported `variant` values are different. Do not install the OMP/Pi package into OpenCode or the OpenCode package into OMP/Pi.
 
 ## License
 

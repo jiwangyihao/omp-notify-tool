@@ -3,14 +3,12 @@ import type {
   ExtensionApiLike,
   ExtensionContextLike,
   NotifyParams,
-  NotifyVariant,
-  RuntimeNotifyType,
 } from "./types"
 
 export const NOTIFY_TOOL_DESCRIPTION =
   "Use for non-blocking progress and phase updates only; do not require immediate user response."
 
-const NOTIFY_VARIANTS = ["info", "success", "warning", "error"] as const
+const NOTIFY_VARIANTS = ["info", "warning", "error"] as const
 
 type NotifyToolExecute = (
   toolCallId: string,
@@ -41,9 +39,6 @@ function createStringEnum(api: ExtensionApiLike, values: readonly string[], opti
   }
 }
 
-function toNotifyType(variant: NotifyVariant): RuntimeNotifyType {
-  return variant === "success" ? "info" : variant
-}
 
 function result(text: string, details: Record<string, unknown>): AgentToolResultLike {
   return {
@@ -105,8 +100,7 @@ export async function executeNotify(
   ctx?: ExtensionContextLike,
 ): Promise<AgentToolResultLike> {
   const variant = params.variant ?? "info"
-  const notifyType = toNotifyType(variant)
-  const details = { variant, notifyType }
+  const details = { variant, notifyType: variant }
 
   if (signal?.aborted === true) {
     return result("notify skipped: aborted", {
@@ -126,7 +120,7 @@ export async function executeNotify(
   }
 
   try {
-    await notify(params.message, notifyType)
+    await notify(params.message, variant)
     return result("ok", {
       delivered: true,
       ...details,
