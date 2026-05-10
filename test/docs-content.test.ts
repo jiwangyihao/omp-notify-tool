@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from "node:fs";
 const README = readFileSync("README.md", "utf8");
 const RELEASE_NOTES = readFileSync("docs/release-notes-v0.2.2.md", "utf8");
 const RUNTIME_COMPATIBILITY_PATH = "docs/runtime-compatibility.md";
+const SPEC_PATH = "docs/omp-pi-notify-tool-spec.md";
 
 function expectIncludes(text: string, expected: string) {
   expect(text).toContain(expected);
@@ -67,6 +68,17 @@ describe("runtime compatibility documentation", () => {
     expectIncludes(runtimeCompatibility, "不声明未验证 runtime 一定支持");
     expectIncludes(runtimeCompatibility, "`variant` 只支持 OMP/Pi UI notify 类型：`info`、`warning`、`error`");
     expectIncludes(runtimeCompatibility, "本包不做跨宿主语义转换");
+  });
+});
+
+describe("OMP/Pi notify tool spec", () => {
+  test("records the official runtime notify signature", () => {
+    expect(existsSync(SPEC_PATH)).toBe(true);
+
+    const spec = readFileSync(SPEC_PATH, "utf8");
+    expectIncludes(spec, "ctx.ui.notify(message, type)");
+    expectIncludes(spec, "notify?: (message: string, type?: RuntimeNotifyType) => void | Promise<void>;");
+    expect(spec).not.toContain("notify?: (payload: { type: RuntimeNotifyType; message: string })");
   });
 });
 

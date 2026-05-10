@@ -368,7 +368,7 @@ export interface AgentToolResultLike {
 export interface ExtensionContextLike {
   hasUI?: boolean;
   ui?: {
-    notify?: (payload: { type: RuntimeNotifyType; message: string }) => void | Promise<void>;
+    notify?: (message: string, type?: RuntimeNotifyType) => void | Promise<void>;
   };
   logger?: {
     warn?: (message: string, error?: unknown) => void;
@@ -567,9 +567,10 @@ README 必须覆盖以下内容：
 - `variant` schema 使用 `StringEnum` 或等价 `{ type: "string", enum: [...] }`，不使用 `Type.Union([Type.Literal(...)])`。
 - 不暴露 `title`、`duration`、`channel`、`dedupeKey`、`sound`、`desktop`、`sticky`。
 - 缺省 `variant` 时调用 UI 使用 `notifyType = "info"`。
-- 显式 `variant` 会保留在 `details.variant`。
+- 缺省 `variant` 时调用 UI 使用官方签名 `ctx.ui.notify(message, "info")`。
+- 显式 `variant` 会作为 `ctx.ui.notify(message, variant)` 的第二参数，并保留在 `details.variant`。
 - UI 可用时返回结构化 tool result：`content[0].text === "ok"`，`details.delivered === true`，`details.variant === 实际 variant`，`details.notifyType === 实际 UI notify type`。
-- `ctx.hasUI = false` 时不调用 UI，返回 skipped，`details.delivered = false`。
+- `ctx.hasUI = false` 但 `ctx.ui.notify` 存在时仍尝试调用 UI；`ctx.hasUI` 不作为唯一开关。
 - `ctx.ui.notify` 缺失时返回 skipped。
 - `ctx.ui.notify` 同步抛错时返回 failed，且 logger warning 被调用。
 - `ctx.ui.notify` 返回 rejected promise 时返回 failed，且 logger warning 被调用。
