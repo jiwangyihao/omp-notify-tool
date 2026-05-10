@@ -45,6 +45,9 @@ describe("README documentation", () => {
     expectIncludes(README, "What You Get");
     expectIncludes(README, "For Humans");
     expectIncludes(README, "For LLM Agents");
+    expectIncludes(README, "opencode-notify-tool");
+    expectIncludes(README, "opencode plugin opencode-notify-tool@0.1.0 --force -g");
+    expectIncludes(README, "不要把 OMP/Pi 包直接装到 OpenCode");
   });
 });
 

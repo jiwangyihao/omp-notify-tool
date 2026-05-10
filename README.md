@@ -149,6 +149,16 @@ npm pack --dry-run --json
 
 工具结果仍会保留原始意图和实际通知类型：`details.variant = "success"`，`details.notifyType = "info"`。
 
+## 相关版本
+
+- 使用 **OpenCode**？请安装 [`opencode-notify-tool`](https://github.com/jiwangyihao/opencode-notify-tool)：
+
+  ```bash
+  opencode plugin opencode-notify-tool@0.1.0 --force -g
+  ```
+
+- 两个包共享 `notify({ message, variant })` 的业务语义，但宿主适配层不同。不要把 OMP/Pi 包直接装到 OpenCode，也不要把 OpenCode 包直接装到 OMP/Pi。
+
 ---
 
 <a name="english"></a>
@@ -274,6 +284,16 @@ npm pack --dry-run --json
 The public input keeps `success` for compatibility with the original OpenCode semantics. OMP/Pi UI notify types accept only `info`, `warning`, and `error`, so `success` is downgraded to `info` at the UI boundary.
 
 The tool result still preserves both values: `details.variant = "success"`, `details.notifyType = "info"`.
+
+## Companion Package
+
+- Using **OpenCode**? Install [`opencode-notify-tool`](https://github.com/jiwangyihao/opencode-notify-tool):
+
+  ```bash
+  opencode plugin opencode-notify-tool@0.1.0 --force -g
+  ```
+
+- Both packages share the `notify({ message, variant })` contract, but their host adapters are different. Do not install the OMP/Pi package into OpenCode or the OpenCode package into OMP/Pi.
 
 ## License
 
