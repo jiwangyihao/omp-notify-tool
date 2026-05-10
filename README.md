@@ -4,9 +4,9 @@
 [![npm downloads](https://img.shields.io/npm/dw/omp-notify-tool.svg)](https://www.npmjs.com/package/omp-notify-tool)
 [![License: MPL-2.0](https://img.shields.io/badge/License-MPL--2.0-brightgreen.svg)](LICENSE)
 
-> **Latest in v0.1.0 | v0.1.0 初始版本**
+> **Latest in v0.2.0 | v0.2.0 原生 OMP/Pi 语义**
 >
-> - Adds a model-callable non-blocking `notify` tool for OMP and Pi-family runtimes | 新增面向 OMP 和 Pi-family runtime 的模型可调用非阻塞 `notify` 工具
+> - Uses OMP/Pi-native `variant` values only: `info`, `warning`, `error` | 仅使用 OMP/Pi 原生 `variant`：`info`、`warning`、`error`
 > - Declares both `omp.extensions` and legacy `pi.extensions` entries | 同时声明 `omp.extensions` 与 legacy `pi.extensions` 入口
 > - Keeps progress updates separate from `question`, `wait`, and completion notifications | 将进度提示与 `question`、`wait` 和完成提醒分离
 > - Falls open when UI notification is unavailable or fails | UI 通知不可用或失败时保持 fail-open
@@ -51,7 +51,7 @@
 当前版本：
 
 ```bash
-omp plugin install npm:omp-notify-tool@0.1.0
+omp plugin install npm:omp-notify-tool@0.2.0
 ```
 
 安装后检查插件状态：
@@ -76,7 +76,7 @@ omp plugin doctor
 2. 提取其中带明确版本号的安装命令。当前版本示例：
 
    ```bash
-   omp plugin install npm:omp-notify-tool@0.1.0
+   omp plugin install npm:omp-notify-tool@0.2.0
    ```
 
 3. 直接执行该命令。不要使用裸包名或 `latest`，不要手动编辑 OMP/Pi 配置。
@@ -192,7 +192,7 @@ First read the latest GitHub Release for omp-notify-tool, then execute the exact
 Current version:
 
 ```bash
-omp plugin install npm:omp-notify-tool@0.1.0
+omp plugin install npm:omp-notify-tool@0.2.0
 ```
 
 Verify installation:
@@ -217,7 +217,7 @@ If OMP is already running, restart it before verification.
 2. Extract the exact versioned install command. Current version example:
 
    ```bash
-   omp plugin install npm:omp-notify-tool@0.1.0
+   omp plugin install npm:omp-notify-tool@0.2.0
    ```
 
 3. Execute that command directly. Do not use a bare package name or `latest`, and do not hand-edit OMP/Pi configuration.
