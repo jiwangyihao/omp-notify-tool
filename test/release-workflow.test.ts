@@ -19,10 +19,9 @@ test("release workflow installs Node 24 and Bun before running Bun tests", () =>
   assert.match(workflow, /registry-url:\s+https:\/\/registry\.npmjs\.org/)
   assert.match(workflow, /run:\s+npm install -g npm@latest/)
   assert.match(workflow, /uses:\s+oven-sh\/setup-bun@v2/)
-  assert.match(workflow, /run:\s+bun install --frozen-lockfile/)
+  assert.match(workflow, /run:\s+bun install --frozen-lockfile --no-verify/)
+  assert.doesNotMatch(workflow, /run:\s+npm ci/)
   assert.match(workflow, /run:\s+bun test/)
-  assert.match(workflow, /run:\s+rm -f \.npmrc/)
-  assert.match(workflow, /env:\n\s+BUN_CONFIG_NO_VERIFY:\s+true/)
 })
 
 test("release workflow dry-runs the package and only publishes unpublished versions", () => {
