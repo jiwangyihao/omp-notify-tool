@@ -72,7 +72,7 @@ omp-notify-tool/
       release.yml
   docs/
     runtime-compatibility.md
-    release-notes-v0.1.0.md
+    release-notes-v0.2.3.md
   src/
     extension.ts
     notify-tool.ts
@@ -99,7 +99,7 @@ omp-notify-tool/
 {
   "type": "module",
   "name": "omp-notify-tool",
-  "version": "0.1.0",
+  "version": "0.2.3",
   "description": "Model-callable non-blocking notify tool for OMP and Pi-family runtimes.",
   "repository": {
     "type": "git",
@@ -138,7 +138,8 @@ omp-notify-tool/
     "src",
     "README.md",
     "LICENSE",
-    "docs/runtime-compatibility.md"
+    "docs/runtime-compatibility.md",
+    "docs/release-notes-v0.2.3.md"
   ]
 }
 ```
@@ -470,7 +471,7 @@ README 必须覆盖以下内容：
 4. 安装命令必须带明确版本号：
 
    ```bash
-   omp plugin install omp-notify-tool@0.1.0
+   omp plugin install omp-notify-tool@0.2.3
    ```
 
 5. 本地开发链接：
@@ -532,7 +533,7 @@ README 必须覆盖以下内容：
 - `keywords` 包含 `oh-my-pi`、`pi-package`、`omp`、`pi`、`extension`、`notify`。
 - `license` 为 `MPL-2.0`，且 `LICENSE` 存在。
 - README 包含当前版本安装命令：`omp plugin install omp-notify-tool@${version}`。
-- `files` 等于 `src`、`README.md`、`LICENSE`、`docs/runtime-compatibility.md`。
+- `files` 等于 `src`、`README.md`、`LICENSE`、`docs/runtime-compatibility.md`、`docs/release-notes-v0.2.3.md`。
 - `files` 不包含 `docs/superpowers`、`test`、`dist`。
 - runtime dependencies 不包含：
   - `@oh-my-pi/*`
@@ -594,7 +595,7 @@ README 必须覆盖以下内容：
 - README 包含 `variant` 只支持 `info`、`warning`、`error` 的说明。
 - README 包含 `MPL-2.0` 并链接 `LICENSE`。
 - `docs/runtime-compatibility.md` 存在，并覆盖 OMP interactive、OMP RPC、headless/subagent、Pi-family，以及“不声明未验证 runtime 一定支持”。
-- `docs/release-notes-v0.1.0.md` 存在，并包含版本号、版本化安装命令、OMP/Pi 双入口、完成提醒插件边界、headless/subagent fail-open 说明、`variant` 支持范围说明。
+- `docs/release-notes-v0.2.3.md` 存在，并包含版本号、版本化安装命令、OMP/Pi 双入口、完成提醒插件边界、headless/subagent fail-open 说明、`variant` 支持范围说明。
 
 ### 12.5 `test/release-workflow.test.ts`
 
@@ -617,7 +618,7 @@ README 必须覆盖以下内容：
 ```bash
 bun test
 npm pack --dry-run --json
-npm view omp-notify-tool@0.1.0 version --json
+npm view omp-notify-tool@0.2.3 version --json
 npm whoami
 npm publish --access public
 ```
@@ -625,11 +626,11 @@ npm publish --access public
 Trusted Publisher 配置完成后，后续发布走 GitHub Release：
 
 ```bash
-gh release create v0.1.0 \
+gh release create v0.2.3 \
   --repo jiwangyihao/omp-notify-tool \
   --target master \
-  --title "v0.1.0" \
-  --notes-file docs/release-notes-v0.1.0.md \
+  --title "v0.2.3" \
+  --notes-file docs/release-notes-v0.2.3.md \
   --latest
 ```
 
@@ -733,7 +734,7 @@ release notes 必须包含：
 
 - 目标 OMP/Pi runtime 当前版本的 `ctx.ui.notify` 参数签名是否仍为 `(message, variant?)`。
 - `registerTool.execute` 的参数顺序是否与当前文档一致：`toolCallId, params, signal, onUpdate, ctx`。
-- `omp plugin install omp-notify-tool@0.1.0` 在发布后能正确加载源码 `src/extension.ts`。
+- `omp plugin install omp-notify-tool@0.2.3` 在发布后能正确加载源码 `src/extension.ts`。
 - RPC 模式下 notify 是否可由客户端实际展示；若不能展示，工具仍应 fail-open，返回可见文本 `ok`，并通过 `details` 表达投递状态。
 
 ## 18. 自检
