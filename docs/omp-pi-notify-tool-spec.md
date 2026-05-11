@@ -161,9 +161,9 @@ omp-notify-tool/
 | --- | --- | --- |
 | OMP interactive TUI | `ctx.ui.notify` | 展示非阻塞通知，工具返回成功 |
 | OMP RPC mode | `ctx.ui.notify` fire-and-forget | 发送 `extension_ui_request`，工具返回成功 |
-| OMP headless / subagent | `ctx.hasUI === false` 或 UI no-op | 不抛错，返回 skipped |
+| OMP headless / subagent | `ctx.hasUI === false` 或 UI no-op | 不抛错；可见工具文本返回 `ok`，`details.delivered = false` |
 | Pi-family runtime | legacy `pi.extensions` 加载同一入口 | 若支持 `registerTool` 与 `ctx.ui.notify`，行为同 OMP |
-| 未知/部分兼容 runtime | 能加载 extension 但 UI 能力缺失 | 不抛错，返回 skipped 或 failed |
+| 未知/部分兼容 runtime | 能加载 extension 但 UI 能力缺失 | 不抛错；可见工具文本返回 `ok`，诊断状态保留在 `details` |
 
 ### 6.2 能力检测
 
@@ -283,7 +283,7 @@ return {
 
 ```ts
 return {
-  content: [{ type: "text", text: "notify skipped: UI unavailable" }],
+  content: [{ type: "text", text: "ok" }],
   details: {
     delivered: false,
     reason: "ui_unavailable",
@@ -293,7 +293,7 @@ return {
 };
 ```
 
-这与 OpenCode 版本的 fail-open 一致，但比固定返回 `ok` 更诚实，便于测试和排障。
+这保持了对模型可见的彻底 fail-open：ACP、headless 或无 UI 环境不会因为非阻塞提示未展示而让 Agent 误判工具失败；真实投递状态通过 `details.delivered = false` 和 `details.reason` 表达，便于测试和排障。
 
 ### 8.3 UI 失败路径
 
@@ -301,7 +301,7 @@ return {
 
 ```ts
 return {
-  content: [{ type: "text", text: "notify failed: continuing" }],
+  content: [{ type: "text", text: "ok" }],
   details: {
     delivered: false,
     reason: "notify_failed",
@@ -327,7 +327,7 @@ warn(api.logger, `[omp-notify-tool] notify failed: ${detail}`, error);
 warn(ctx.logger, `[omp-notify-tool] notify failed: ${detail}`, error);
 ```
 
-日志失败不得影响工具返回；`api.logger.warn` 或 `ctx.logger.warn` 自身抛错时，也必须返回上面的 failed/continuing 结果。
+日志失败不得影响工具返回；`api.logger.warn` 或 `ctx.logger.warn` 自身抛错时，也必须返回可见文本 `ok`，并在 `details.reason = "notify_failed"` 中保留诊断状态。
 
 
 ### 8.4 Cancellation
@@ -335,7 +335,7 @@ warn(ctx.logger, `[omp-notify-tool] notify failed: ${detail}`, error);
 `notify` 是一次快速 fire-and-forget UI 操作。若 `signal.aborted === true`：
 
 - 不调用 UI。
-- 返回 `notify skipped: aborted`。
+- 返回可见文本 `ok`。
 - `details.reason = "aborted"`。
 
 不要调用 `ctx.abort()`。
@@ -494,7 +494,7 @@ README 必须覆盖以下内容：
    }
    ```
 
-8. 运行模式说明：interactive/RPC 可通知，headless/subagent 可能 skipped；`variant` 只支持 `info`、`warning`、`error`，且 tool result 中 `details.notifyType` 与最终使用的 `variant` 一致。
+8. 运行模式说明：interactive/RPC 可通知，headless/subagent 以 `details.delivered = false` 表达未投递状态；可见工具文本仍为 `ok`；`variant` 只支持 `info`、`warning`、`error`，且 tool result 中 `details.notifyType` 与最终使用的 `variant` 一致。
 
 9. Pi-family runtime 通过同一个 npm 包的 legacy `pi.extensions` 入口加载。若目标 Pi CLI 的安装命令与 OMP 不同，应在实现阶段验证后补充对应命令；未验证前不要写成事实。
 
@@ -507,7 +507,7 @@ README 必须覆盖以下内容：
 - 本文档只记录能力门槛和观察结果，不声明未验证 runtime 一定支持。
 - OMP interactive TUI：需要 extension entry、`registerTool`、`ctx.ui.notify`。
 - OMP RPC：需要 fire-and-forget `notify` UI request。
-- Headless/subagent：应返回 skipped。
+- Headless/subagent：应返回可见文本 `ok`，并用 `details.delivered = false` 与 `details.reason` 表达未投递原因。
 - Pi-family：需要 legacy `pi.extensions` manifest 和兼容的 extension API。
 - 本包不依赖 active-tools、provider request hook、message renderer 或 custom UI。
 
@@ -571,12 +571,12 @@ README 必须覆盖以下内容：
 - 显式 `variant` 会作为 `ctx.ui.notify(message, variant)` 的第二参数，并保留在 `details.variant`。
 - UI 可用时返回结构化 tool result：`content[0].text === "ok"`，`details.delivered === true`，`details.variant === 实际 variant`，`details.notifyType === 实际 UI notify type`。
 - `ctx.hasUI = false` 但 `ctx.ui.notify` 存在时仍尝试调用 UI；`ctx.hasUI` 不作为唯一开关。
-- `ctx.ui.notify` 缺失时返回 skipped。
-- `ctx.ui.notify` 同步抛错时返回 failed，且 logger warning 被调用。
-- `ctx.ui.notify` 返回 rejected promise 时返回 failed，且 logger warning 被调用。
-- `api.logger.warn` 抛错时，失败路径仍返回 `details.reason = "notify_failed"` 且不 reject。
-- `ctx.logger.warn` 抛错时，失败路径仍返回 `details.reason = "notify_failed"` 且不 reject。
-- `signal.aborted = true` 时不调用 UI，返回 aborted。
+- `ctx.ui.notify` 缺失时返回可见文本 `ok`，`details.reason = "ui_unavailable"`。
+- `ctx.ui.notify` 同步抛错时返回可见文本 `ok`，`details.reason = "notify_failed"`，且 logger warning 被调用。
+- `ctx.ui.notify` 返回 rejected promise 时返回可见文本 `ok`，`details.reason = "notify_failed"`，且 logger warning 被调用。
+- `api.logger.warn` 抛错时，失败路径仍返回 `content[0].text === "ok"`、`details.reason = "notify_failed"` 且不 reject。
+- `ctx.logger.warn` 抛错时，失败路径仍返回 `content[0].text === "ok"`、`details.reason = "notify_failed"` 且不 reject。
+- `signal.aborted = true` 时不调用 UI，返回可见文本 `ok`，`details.reason = "aborted"`。
 - `onUpdate` 不被调用；本工具不产生流式部分结果。
 
 ### 12.4 `test/docs-content.test.ts`
@@ -594,7 +594,7 @@ README 必须覆盖以下内容：
 - README 包含 `variant` 只支持 `info`、`warning`、`error` 的说明。
 - README 包含 `MPL-2.0` 并链接 `LICENSE`。
 - `docs/runtime-compatibility.md` 存在，并覆盖 OMP interactive、OMP RPC、headless/subagent、Pi-family，以及“不声明未验证 runtime 一定支持”。
-- `docs/release-notes-v0.1.0.md` 存在，并包含版本号、版本化安装命令、OMP/Pi 双入口、完成提醒插件边界、headless/subagent skipped 说明、`variant` 支持范围说明。
+- `docs/release-notes-v0.1.0.md` 存在，并包含版本号、版本化安装命令、OMP/Pi 双入口、完成提醒插件边界、headless/subagent fail-open 说明、`variant` 支持范围说明。
 
 ### 12.5 `test/release-workflow.test.ts`
 
@@ -639,7 +639,7 @@ release notes 必须包含：
 - 明确版本安装命令。
 - OMP/Pi 双入口说明。
 - 与 `pi-notify` / `pi-poly-notify` 的边界。
-- headless/subagent 可能返回 skipped 的说明。
+- headless/subagent fail-open，且可见工具文本仍为 `ok` 的说明。
 - `variant` 只支持 `info`、`warning`、`error` 的说明。
 
 ## 14. 安全与可靠性要求
@@ -710,8 +710,8 @@ release notes 必须包含：
 - `variant` 缺省时按 `info` 处理。
 - interactive UI 可用时调用 `ctx.ui.notify(message, type)`。
 - RPC UI 可用时通过 runtime 的 fire-and-forget notify 通道发送。
-- headless/subagent/no-UI 场景不抛错，返回 skipped。
-- UI notify 抛错或 rejected 时不使 tool 失败，返回 failed/continuing，并记录 warning。
+- headless/subagent/no-UI 场景不抛错，可见工具文本仍为 `ok`，真实状态通过 `details.reason = "ui_unavailable"` 表达。
+- UI notify 抛错或 rejected 时不使 tool 失败，可见工具文本仍为 `ok`，并记录 warning 与 `details.reason = "notify_failed"`。
 - 工具不会调用 `question`、`wait`、`ctx.abort()` 或任何外部通知通道。
 - 安装插件不会写用户配置、不会生成 agent、不会修改 active tools。
 - `bun test` 通过。
@@ -734,12 +734,12 @@ release notes 必须包含：
 - 目标 OMP/Pi runtime 当前版本的 `ctx.ui.notify` 参数签名是否仍为 `(message, variant?)`。
 - `registerTool.execute` 的参数顺序是否与当前文档一致：`toolCallId, params, signal, onUpdate, ctx`。
 - `omp plugin install omp-notify-tool@0.1.0` 在发布后能正确加载源码 `src/extension.ts`。
-- RPC 模式下 notify 是否可由客户端实际展示；若不能展示，工具仍应返回明确 skipped/failed。
+- RPC 模式下 notify 是否可由客户端实际展示；若不能展示，工具仍应 fail-open，返回可见文本 `ok`，并通过 `details` 表达投递状态。
 
 ## 18. 自检
 
 - 范围聚焦：本规格只覆盖 OMP/Pi 版模型可调用 `notify` 工具，不包含 OpenCode 包改造、完成提醒、外部推送或 loop-safety 总控。
 - 边界明确：`notify` 仅用于非阻塞进度；交互、等待和最终交接继续由宿主其他工具处理。
 - 双运行时明确：package manifest 必须同时包含 `omp.extensions` 和 `pi.extensions`。
-- 安全策略明确：通知失败 fail-open，但 tool result 必须如实表达 skipped/failed，不能把未展示伪装成 delivered。
+- 安全策略明确：通知失败 fail-open；对模型可见文本始终为 `ok`，但 `details` 必须如实表达 delivered/reason，不能把未展示伪装成 delivered。
 - 测试可执行：每个关键行为都有对应测试文件和断言。

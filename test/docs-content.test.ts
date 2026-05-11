@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, readFileSync } from "node:fs";
 
 const README = readFileSync("README.md", "utf8");
-const RELEASE_NOTES = readFileSync("docs/release-notes-v0.2.2.md", "utf8");
+const RELEASE_NOTES = readFileSync("docs/release-notes-v0.2.3.md", "utf8");
 const RUNTIME_COMPATIBILITY_PATH = "docs/runtime-compatibility.md";
 const SPEC_PATH = "docs/omp-pi-notify-tool-spec.md";
 
@@ -23,8 +23,8 @@ describe("README documentation", () => {
     expectIncludes(README, "`pi-notify`");
     expectIncludes(README, "`pi-poly-notify`");
     expectIncludes(README, "本包不是完成提醒插件");
-    expectIncludes(README, "omp plugin install omp-notify-tool@0.2.2");
-    expectIncludes(README, "Latest in v0.2.2 | v0.2.2 官方 notify 签名修复");
+    expectIncludes(README, "omp plugin install omp-notify-tool@0.2.3");
+    expectIncludes(README, "Latest in v0.2.3 | v0.2.3 ACP 友好的 fail-open 结果");
     expectIncludes(README, "面向人类用户");
     expectIncludes(README, "面向 LLM 智能体");
     expectIncludes(README, "不要省略版本号，不要使用 `latest`");
@@ -62,12 +62,13 @@ describe("runtime compatibility documentation", () => {
     expectIncludes(runtimeCompatibility, "OMP RPC");
     expectIncludes(runtimeCompatibility, "fire-and-forget");
     expect(runtimeCompatibility).toMatch(/headless\s*\/\s*subagent/);
-    expectIncludes(runtimeCompatibility, "skipped");
+    expectIncludes(runtimeCompatibility, "可见工具文本仍为 `ok`");
     expectIncludes(runtimeCompatibility, "Pi-family");
     expectIncludes(runtimeCompatibility, "legacy `pi.extensions`");
     expectIncludes(runtimeCompatibility, "不声明未验证 runtime 一定支持");
     expectIncludes(runtimeCompatibility, "`variant` 只支持 OMP/Pi UI notify 类型：`info`、`warning`、`error`");
     expectIncludes(runtimeCompatibility, "本包不做跨宿主语义转换");
+    expectIncludes(runtimeCompatibility, "details.reason = \"ui_unavailable\"");
   });
 });
 
@@ -79,17 +80,20 @@ describe("OMP/Pi notify tool spec", () => {
     expectIncludes(spec, "ctx.ui.notify(message, type)");
     expectIncludes(spec, "notify?: (message: string, type?: RuntimeNotifyType) => void | Promise<void>;");
     expect(spec).not.toContain("notify?: (payload: { type: RuntimeNotifyType; message: string })");
+    expectIncludes(spec, "可见工具文本返回 `ok`");
+    expectIncludes(spec, "content[0].text === \"ok\"");
   });
 });
 
-describe("v0.2.2 release notes", () => {
+describe("v0.2.3 release notes", () => {
   test("summarize install, dual entry, boundaries, and runtime caveats", () => {
-    expectIncludes(RELEASE_NOTES, "v0.2.2");
-    expectIncludes(RELEASE_NOTES, "omp plugin install omp-notify-tool@0.2.2");
-    expectIncludes(RELEASE_NOTES, "ctx.ui.notify(message, type)");
-    expectIncludes(RELEASE_NOTES, "`hasUI: false`");
+    expectIncludes(RELEASE_NOTES, "v0.2.3");
+    expectIncludes(RELEASE_NOTES, "omp plugin install omp-notify-tool@0.2.3");
+    expectIncludes(RELEASE_NOTES, "content[0].text === \"ok\"");
+    expectIncludes(RELEASE_NOTES, "无 UI、aborted");
+    expectIncludes(RELEASE_NOTES, "details.reason");
     expectIncludes(RELEASE_NOTES, "`variant` 支持范围为 `info`、`warning`、`error`");
     expectIncludes(RELEASE_NOTES, "fail-open");
-    expectIncludes(RELEASE_NOTES, "ctx.ui.notify` 缺失、抛错或 rejected");
+    expectIncludes(RELEASE_NOTES, "ctx.ui.notify` 抛错或 rejected");
   });
 });

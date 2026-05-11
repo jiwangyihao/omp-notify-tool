@@ -4,9 +4,9 @@
 [![npm downloads](https://img.shields.io/npm/dw/omp-notify-tool.svg)](https://www.npmjs.com/package/omp-notify-tool)
 [![License: MPL-2.0](https://img.shields.io/badge/License-MPL--2.0-brightgreen.svg)](LICENSE)
 
-> **Latest in v0.2.2 | v0.2.2 官方 notify 签名修复**
+> **Latest in v0.2.3 | v0.2.3 ACP 友好的 fail-open 结果**
 >
-> - Uses OMP official `ctx.ui.notify(message, type)` signature | 使用 OMP 官方 `ctx.ui.notify(message, type)` 签名
+> - Always returns visible tool text `ok`; delivery state stays in `details` | 可见工具文本始终返回 `ok`，投递状态保留在 `details`
 > - Declares both `omp.extensions` and legacy `pi.extensions` entries | 同时声明 `omp.extensions` 与 legacy `pi.extensions` 入口
 > - Keeps progress updates separate from `question`, `wait`, and completion notifications | 将进度提示与 `question`、`wait` 和完成提醒分离
 > - Falls open when UI notification is unavailable or fails | UI 通知不可用或失败时保持 fail-open
@@ -29,7 +29,7 @@
 - **OMP/Pi 双入口** — npm 包同时声明 `omp.extensions` 与 legacy `pi.extensions`，入口均为 `./src/extension.ts`。
 - **明确交互边界** — 需要用户响应、确认、授权、最终交接或无安全工作可继续时，不要使用 `notify`。
 - **完成提醒边界** — 如果需要 Agent 完成后提醒人回来，请使用 `pi-notify` 或 `pi-poly-notify`。本包不是完成提醒插件。
-- **Fail-open** — headless/subagent、无 UI、`ctx.ui.notify` 缺失或通知失败时，工具返回 skipped/failed，不中断主任务。
+- **Fail-open** — headless/subagent、无 UI、`ctx.ui.notify` 缺失或通知失败时，对模型可见文本仍为 `ok`，真实投递状态保留在 `details`。
 
 ---
 
@@ -51,7 +51,7 @@
 当前版本：
 
 ```bash
-omp plugin install omp-notify-tool@0.2.2
+omp plugin install omp-notify-tool@0.2.3
 ```
 
 当前 OMP CLI（已验证 `omp/14.9.3`）不接受 `npm:` 前缀；请使用上面的裸包名版本化命令。
@@ -78,7 +78,7 @@ omp plugin doctor
 2. 提取其中带明确版本号的安装命令。当前版本示例：
 
    ```bash
-   omp plugin install omp-notify-tool@0.2.2
+   omp plugin install omp-notify-tool@0.2.3
    ```
 
    当前 OMP CLI（已验证 `omp/14.9.3`）不接受 `npm:` 前缀；不要把命令改成 `npm:omp-notify-tool@...`。
@@ -104,7 +104,7 @@ omp plugin doctor
 }
 ```
 
-在 interactive/RPC UI 可用时，应看到非阻塞通知；在 headless/subagent 或无 UI 场景中，工具可能返回 skipped，但不会中断主任务。
+在 interactive/RPC UI 可用时，应看到非阻塞通知；在 headless/subagent 或无 UI 场景中，工具对模型可见文本仍返回 `ok`，不会中断主任务，真实状态记录在 `details.delivered` 与 `details.reason`。
 
 </details>
 
@@ -144,7 +144,7 @@ npm pack --dry-run --json
 
 - **OMP interactive**：当当前会话有 UI 且 `ctx.ui.notify` 可用时，通知会作为非阻塞 UI 提示展示。
 - **OMP RPC**：当宿主提供 RPC UI notify 通道时，通知按 fire-and-forget 方式发送，不要求模型等待用户响应。
-- **headless/subagent**：无 UI、后台或子代理场景可能返回 skipped；工具会 fail open，不中断主任务。
+- **headless/subagent**：无 UI、后台或子代理场景对模型可见文本仍返回 `ok`；工具会 fail open，并在 `details` 中记录未投递原因。
 - **Pi-family runtime**：同一个 npm 包通过 legacy `pi.extensions` 入口加载。目标 Pi runtime 仍需提供兼容的 extension API 和 `ctx.ui.notify` 能力；未验证的安装命令或运行时行为不在本文中写成事实。
 
 
@@ -196,7 +196,7 @@ First read the latest GitHub Release for omp-notify-tool, then execute the exact
 Current version:
 
 ```bash
-omp plugin install omp-notify-tool@0.2.2
+omp plugin install omp-notify-tool@0.2.3
 ```
 
 Current OMP CLI behavior (verified with `omp/14.9.3`) does not accept the `npm:` prefix; use the bare package name command above.
@@ -223,7 +223,7 @@ If OMP is already running, restart it before verification.
 2. Extract the exact versioned install command. Current version example:
 
    ```bash
-   omp plugin install omp-notify-tool@0.2.2
+   omp plugin install omp-notify-tool@0.2.3
    ```
 
    Current OMP CLI behavior (verified with `omp/14.9.3`) does not accept the `npm:` prefix; do not rewrite the command as `npm:omp-notify-tool@...`.
@@ -249,7 +249,7 @@ Ask the agent to call `notify`, for example:
 }
 ```
 
-In interactive/RPC UI modes, a non-blocking notification should be displayed. In headless/subagent or no-UI modes, the tool may return skipped without interrupting the main task.
+In interactive/RPC UI modes, a non-blocking notification should be displayed. In headless/subagent or no-UI modes, the visible tool text still returns `ok`; delivery state is recorded in `details.delivered` and `details.reason`.
 
 </details>
 
@@ -279,7 +279,7 @@ npm pack --dry-run --json
 
 - **OMP interactive**: shows a non-blocking UI notification when `ctx.ui.notify` is available.
 - **OMP RPC**: sends a fire-and-forget UI notification request when the host provides that channel.
-- **headless/subagent**: may return skipped; the tool fails open and does not interrupt the main task.
+- **headless/subagent**: visible tool text still returns `ok`; delivery failures stay in `details`, and the tool fails open without interrupting the main task.
 - **Pi-family runtime**: loads through the legacy `pi.extensions` package entry. The target runtime must provide compatible extension APIs and `ctx.ui.notify`.
 
 

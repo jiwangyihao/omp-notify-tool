@@ -57,7 +57,7 @@ describe("package manifest", () => {
       "README.md",
       "LICENSE",
       "docs/runtime-compatibility.md",
-      "docs/release-notes-v0.2.2.md",
+      "docs/release-notes-v0.2.3.md",
     ]);
     expect(packageJson.files).not.toContain("docs/superpowers");
     expect(packageJson.files).not.toContain("test");

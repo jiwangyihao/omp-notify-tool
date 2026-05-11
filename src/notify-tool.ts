@@ -103,7 +103,7 @@ export async function executeNotify(
   const details = { variant, notifyType: variant }
 
   if (signal?.aborted === true) {
-    return result("notify skipped: aborted", {
+    return result("ok", {
       delivered: false,
       reason: "aborted",
       ...details,
@@ -112,7 +112,7 @@ export async function executeNotify(
 
   const notify = ctx?.ui?.notify
   if (typeof notify !== "function") {
-    return result("notify skipped: UI unavailable", {
+    return result("ok", {
       delivered: false,
       reason: "ui_unavailable",
       ...details,
@@ -130,7 +130,7 @@ export async function executeNotify(
     warn(api.logger, message, error)
     warn(ctx.logger, message, error)
 
-    return result("notify failed: continuing", {
+    return result("ok", {
       delivered: false,
       reason: "notify_failed",
       ...details,

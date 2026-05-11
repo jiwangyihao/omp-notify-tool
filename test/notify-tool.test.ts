@@ -199,18 +199,18 @@ describe("executeNotify", () => {
     expect(result.details).toEqual({ delivered: true, variant: "info", notifyType: "info" })
   })
 
-  test("skips when UI notify method is missing", async () => {
+  test("returns ok text when UI notify method is missing", async () => {
     const result = await executeNotify(createApi(), { message: "background" }, createAbortSignal(false), {
       hasUI: true,
       ui: {},
     })
 
-    expect(result.content[0]?.text).toBe("notify skipped: UI unavailable")
+    expect(result.content[0]?.text).toBe("ok")
     expect(result.details?.delivered).toBe(false)
     expect(result.details?.reason).toBe("ui_unavailable")
   })
 
-  test("returns failed result and warns when UI notify throws synchronously", async () => {
+  test("returns ok text and warns when UI notify throws synchronously", async () => {
     const warnings: string[] = []
     const error = new Error("sync boom")
 
@@ -224,13 +224,13 @@ describe("executeNotify", () => {
       },
     )
 
-    expect(result.content[0]?.text).toBe("notify failed: continuing")
+    expect(result.content[0]?.text).toBe("ok")
     expect(result.details).toEqual({ delivered: false, reason: "notify_failed", variant: "info", notifyType: "info" })
     expect(warnings).toHaveLength(1)
     expect(warnings[0]).toContain("sync boom")
   })
 
-  test("returns failed result and warns when UI notify rejects", async () => {
+  test("returns ok text and warns when UI notify rejects", async () => {
     const warnings: string[] = []
 
     const result = await executeNotify(
@@ -243,19 +243,19 @@ describe("executeNotify", () => {
       },
     )
 
-    expect(result.content[0]?.text).toBe("notify failed: continuing")
+    expect(result.content[0]?.text).toBe("ok")
     expect(result.details?.reason).toBe("notify_failed")
     expect(warnings).toHaveLength(1)
     expect(warnings[0]).toContain("async boom")
   })
 
-  test("returns failed result when thrown value cannot be stringified", async () => {
+  test("returns ok text when thrown value cannot be stringified", async () => {
     const result = await executeNotify(createApi(), { message: "running" }, createAbortSignal(false), {
       hasUI: true,
       ui: { notify: () => { throw Object.create(null) } },
     })
 
-    expect(result.content[0]?.text).toBe("notify failed: continuing")
+    expect(result.content[0]?.text).toBe("ok")
     expect(result.details).toEqual({ delivered: false, reason: "notify_failed", variant: "info", notifyType: "info" })
   })
 
@@ -298,7 +298,7 @@ describe("executeNotify", () => {
     expect(warnings[0]).toContain("notify failed")
   })
 
-  test("skips without calling UI when signal is already aborted", async () => {
+  test("returns ok text without calling UI when signal is already aborted", async () => {
     let notifyCalled = false
 
     const result = await executeNotify(createApi(), { message: "running", variant: "error" }, createAbortSignal(true), {
@@ -307,7 +307,7 @@ describe("executeNotify", () => {
     })
 
     expect(notifyCalled).toBe(false)
-    expect(result.content[0]?.text).toBe("notify skipped: aborted")
+    expect(result.content[0]?.text).toBe("ok")
     expect(result.details).toEqual({ delivered: false, reason: "aborted", variant: "error", notifyType: "error" })
   })
 })
